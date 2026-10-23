@@ -73,10 +73,24 @@ HTML_START = """<!doctype html>
     .folder { margin: .5rem 0; background: #0e1b15; border-radius: .6rem; }
     .folder > summary { font-size: .9rem; }
     .folder ul { padding: 0 .8rem .5rem; }
-    li.file { border-bottom: 1px solid #22372b; }
+    li.file { display: flex; align-items: center; gap: .5rem; border-bottom: 1px solid #22372b; }
     li.file:last-child { border-bottom: 0; }
     .file a { display: flex; align-items: center; gap: .8rem; min-width: 0; padding: .8rem .5rem; border-radius: .4rem; color: var(--text); text-decoration: none; }
     .file a:hover { background: #1a3023; color: var(--accent); }
+    .file-link { flex: 1; }
+    .file .download-link, .player-download { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 44px; height: 44px; padding: .6rem; border: 1px solid var(--line); border-radius: .5rem; color: var(--accent); text-decoration: none; }
+    .download-icon { display: block; width: 20px; height: 20px; flex-shrink: 0; background: currentColor; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3v12m-5-5 5 5 5-5M5 16v4a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-4'/%3E%3C/svg%3E") center / contain no-repeat; }
+    .player-download:hover { background: #1a3023; }
+    .player-open { overflow: hidden; }
+    .player { width: min(960px, calc(100% - 2rem)); max-height: calc(100dvh - 2rem); padding: 1rem; border: 1px solid var(--line); border-radius: 1rem; background: var(--panel); color: var(--text); }
+    .player::backdrop { background: rgb(0 0 0 / .8); }
+    .player-header { display: flex; align-items: start; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+    .player h2 { margin: 0; font-size: 1rem; overflow-wrap: anywhere; }
+    .player form { flex-shrink: 0; }
+    .player video { display: block; width: 100%; max-height: 65dvh; background: #000; border-radius: .5rem; }
+    .player-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin-top: 1rem; }
+    .player-actions a { color: var(--accent); }
+    .player-error { color: #ffb9a9; }
     .file-type { display: grid; place-items: center; flex: 0 0 2.4rem; height: 2rem; border: 1px solid #385d44; border-radius: .4rem; color: var(--accent); font-size: .6rem; font-weight: 700; letter-spacing: .04em; }
     .file-name { min-width: 0; overflow-wrap: anywhere; font-size: .88rem; }
     .size { margin-left: auto; flex-shrink: 0; color: var(--muted); font-size: .75rem; font-variant-numeric: tabular-nums; }
@@ -105,6 +119,9 @@ HTML_START = """<!doctype html>
       .file-name { flex: 1; }
       .size { width: 100%; margin-left: 2.9rem; }
       .file-arrow { display: none; }
+      .file { flex-wrap: wrap; padding-bottom: .5rem; }
+      .file-link { flex-basis: 100%; }
+      .file .download-link { margin-left: 2.9rem; }
     }
     @media (prefers-reduced-motion: reduce) { summary::before { transition: none; } }
   </style>
@@ -124,6 +141,18 @@ HTML_START = """<!doctype html>
 
 HTML_END = r"""  </section>
   <footer><span>PT Agility Streams &middot; Arquivo de provas</span><span>Feito para quem vive o agility.</span></footer>
+  <dialog id="video-player" class="player" aria-labelledby="player-title">
+    <div class="player-header">
+      <h2 id="player-title">Reproduzir vídeo</h2>
+      <form method="dialog"><button type="submit" autofocus>Fechar</button></form>
+    </div>
+    <video controls autoplay playsinline preload="metadata" aria-label="Reprodutor de vídeo"></video>
+    <p id="player-error" class="player-error" role="alert" hidden>Não foi possível reproduzir este vídeo. Tente abrir o ficheiro diretamente ou descarregá-lo.</p>
+    <div class="player-actions">
+      <a class="player-download" download aria-label="Descarregar vídeo" title="Descarregar vídeo"><span class="download-icon" aria-hidden="true"></span></a>
+      <a class="player-direct" target="_blank" rel="noopener">Abrir ficheiro diretamente</a>
+    </div>
+  </dialog>
   <script>
     const details = [...document.querySelectorAll("details")];
     const search = document.querySelector("#search");
@@ -161,6 +190,38 @@ HTML_END = r"""  </section>
     });
     document.querySelector("[data-action=expand]").addEventListener("click", () => details.forEach(item => { if (!item.hidden) item.open = true; }));
     document.querySelector("[data-action=collapse]").addEventListener("click", () => details.forEach(item => item.open = false));
+    const player = document.querySelector("#video-player");
+    const video = player.querySelector("video");
+    const playerError = document.querySelector("#player-error");
+    document.querySelector("#archive").addEventListener("click", event => {
+      const link = event.target.closest("a[data-player]");
+      if (!link || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+      if (!player.showModal) return;
+      event.preventDefault();
+      const name = link.querySelector(".file-name").textContent;
+      player.querySelector("#player-title").textContent = name;
+      player.querySelector(".player-download").href = link.href;
+      player.querySelector(".player-download").download = name;
+      player.querySelector(".player-direct").href = link.href;
+      playerError.hidden = true;
+      player.showModal();
+      document.documentElement.classList.add("player-open");
+      video.src = link.href;
+    });
+    player.addEventListener("close", () => {
+      video.pause();
+      video.removeAttribute("src");
+      video.load();
+      document.documentElement.classList.remove("player-open");
+    });
+    player.addEventListener("click", event => {
+      if (event.target !== player) return;
+      const bounds = player.getBoundingClientRect();
+      if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) player.close();
+    });
+    video.addEventListener("error", () => {
+      if (video.hasAttribute("src")) playerError.hidden = false;
+    });
   </script>
 </main>
 </body>
@@ -277,12 +338,27 @@ def render_file(lines: list[str], file: FileItem, source: Path, depth: int) -> N
     href = escape(file_href(file, source), quote=True)
     name = escape(file.name)
     file_type = escape(file.path.suffix.lstrip(".").upper() or "FILE")
+    is_video = file.path.suffix.lower() == ".mp4"
+    player_attributes = (
+        ' data-player aria-haspopup="dialog" aria-controls="video-player"'
+        ' title="Reproduzir vídeo"'
+        if is_video
+        else ""
+    )
+    download = (
+        f'<a class="download-link" href="{href}" download="{name}"'
+        f' aria-label="Descarregar {name}" title="Descarregar vídeo">'
+        '<span class="download-icon" aria-hidden="true"></span></a>'
+        if is_video
+        else ""
+    )
+    arrow = "&#9654;" if is_video else "&nearr;"
     lines.append(
-        f'{indent}<li class="file"><a href="{href}">'
+        f'{indent}<li class="file"><a class="file-link" href="{href}"{player_attributes}>'
         f'<span class="file-type" aria-hidden="true">{file_type}</span>'
         f'<span class="file-name">{name}</span>'
         f'<span class="size">{format_file_size(file.size)}</span>'
-        f'<span class="file-arrow" aria-hidden="true">&nearr;</span></a></li>'
+        f'<span class="file-arrow" aria-hidden="true">{arrow}</span></a>{download}</li>'
     )
 
 
