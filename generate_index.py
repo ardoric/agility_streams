@@ -22,45 +22,145 @@ HTML_START = """<!doctype html>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>PT Agility Streams</title>
   <style>
-    :root { color-scheme: dark; --bg: #071c13; --panel: #0d3021; --panel-2: #145136; --text: #f2fff7; --muted: #add5bd; --accent: #76f0a7; --line: #2d7852; }
+    :root { color-scheme: dark; --bg: #0b1411; --panel: #111f19; --text: #edf5ef; --muted: #a0b7a9; --accent: #a2edb5; --line: #2a4034; }
     * { box-sizing: border-box; }
-    body { margin: 0; min-height: 100vh; background: linear-gradient(145deg, #176b43 0, var(--bg) 42rem); color: var(--text); font: 16px/1.45 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-    main { width: min(1100px, calc(100% - 2rem)); margin: 0 auto; padding: 2.5rem 0 5rem; }
-    header { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; }
-    h1 { margin: 0; font-size: clamp(2rem, 7vw, 4.2rem); line-height: 1; letter-spacing: -.04em; }
-    .subtitle { margin: .65rem 0 0; color: var(--muted); }
+    [hidden] { display: none !important; }
+    body { margin: 0; min-height: 100vh; background: radial-gradient(ellipse at 85% 0, #1c392a 0, transparent 38rem), var(--bg); color: var(--text); font: 15px/1.6 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    button, input { font: inherit; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+    main { width: min(1120px, calc(100% - 3rem)); margin: 0 auto; }
+    .masthead { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 0; border-bottom: 1px solid var(--line); }
+    .brand { display: flex; align-items: center; gap: .7rem; font-weight: 700; letter-spacing: -.02em; }
+    .brand-mark { display: grid; place-items: center; width: 2rem; height: 2rem; border-radius: .65rem; background: var(--accent); color: var(--bg); font-size: .85rem; }
+    .masthead-note, .eyebrow { color: var(--accent); font-size: .72rem; text-transform: uppercase; letter-spacing: .17em; font-weight: 650; }
+    .hero { padding: 3.5rem 0 2.5rem; }
+    .eyebrow { margin: 0 0 .85rem; }
+    h1 { max-width: 850px; margin: 0; font-size: clamp(2.5rem, 6vw, 4.6rem); font-weight: 650; line-height: 1.08; letter-spacing: -.055em; }
+    h1 span { color: var(--accent); }
+    .subtitle { max-width: 38rem; margin: 1.2rem 0 0; color: var(--muted); font-size: 1.05rem; }
+    .stats { display: flex; flex-wrap: wrap; gap: 1.5rem 3rem; margin: 0 0 2.5rem; padding: 1.3rem 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .stats div { display: flex; align-items: baseline; gap: .65rem; }
+    .stats dt { color: var(--muted); font-size: .85rem; order: 1; }
+    .stats dd { margin: 0; font-size: 1.8rem; font-weight: 600; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+    .toolbar { display: flex; flex-wrap: wrap; align-items: end; gap: 1rem; margin-bottom: .8rem; }
+    .search { flex: 1; min-width: min(100%, 20rem); }
+    .search label { display: block; color: var(--muted); margin-bottom: .5rem; font-size: .8rem; }
+    .search input { width: 100%; min-height: 3rem; padding: .7rem 1rem; border: 1px solid var(--line); border-radius: .7rem; background: var(--panel); color: var(--text); }
+    .search input::placeholder { color: var(--muted); opacity: 1; }
     .controls { display: flex; gap: .5rem; }
-    button { border: 1px solid var(--line); border-radius: .55rem; padding: .55rem .8rem; background: var(--panel); color: var(--text); cursor: pointer; }
-    button:hover { background: var(--panel-2); }
-    details { border: 1px solid var(--line); border-radius: .7rem; background: color-mix(in srgb, var(--panel) 92%, transparent); }
-    details + details { margin-top: .75rem; }
-    details details { margin: .55rem 0 0 1rem; background: rgba(255, 255, 255, .025); }
-    summary { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; padding: .8rem 1rem; cursor: pointer; font-weight: 700; }
-    .season > summary { padding: 1rem 1.2rem; font-size: 1.4rem; background: var(--panel-2); border-radius: .65rem; }
-    .day > summary { font-size: 1.08rem; }
-    .count, .size { flex: 0 0 auto; color: var(--muted); font-size: .82rem; font-weight: 500; }
-    .content { padding: .15rem .85rem .9rem; }
-    ul { margin: .15rem 0 0; padding: 0 0 0 1.2rem; list-style: none; }
-    li.folder-node + li.folder-node { margin-top: .55rem; }
-    li.file { display: flex; justify-content: space-between; gap: 1rem; padding: .32rem .25rem; border-bottom: 1px solid rgba(173, 213, 189, .12); }
+    button { min-height: 3rem; border: 1px solid var(--line); border-radius: .7rem; padding: .65rem .95rem; background: transparent; color: var(--text); cursor: pointer; }
+    button:hover { background: #21382a; border-color: #61836b; }
+    .archive-meta { display: flex; justify-content: space-between; flex-wrap: wrap; gap: .5rem; margin: 0 0 1.3rem; color: var(--muted); font-size: .8rem; }
+    .archive { padding-bottom: 3rem; }
+    details { border: 1px solid var(--line); border-radius: .85rem; background: var(--panel); }
+    .season + .season { margin-top: 1rem; }
+    summary { display: flex; align-items: center; gap: .85rem; padding: 1rem; cursor: pointer; list-style: none; }
+    summary::-webkit-details-marker { display: none; }
+    summary::before { content: ""; width: .45rem; height: .45rem; flex-shrink: 0; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: rotate(-45deg); transition: transform .15s; }
+    details[open] > summary::before { transform: rotate(45deg); }
+    summary:hover { color: var(--accent); }
+    summary > span:first-of-type { min-width: 0; overflow-wrap: anywhere; }
+    .season > summary { padding: 1.3rem 1.4rem; font-size: 1.3rem; font-weight: 600; letter-spacing: -.025em; }
+    .season[open] > summary { border-bottom: 1px solid var(--line); }
+    .season > .content { padding: .3rem 1.2rem 1rem; }
+    .day { border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: transparent; }
+    .day:last-child { border-bottom: 0; }
+    .day > summary { padding: 1.2rem .2rem; font-size: .98rem; font-weight: 550; }
+    .day[open] > summary { color: var(--accent); }
+    .count { margin-left: auto; color: var(--muted); font-size: .78rem; font-weight: 400; letter-spacing: 0; text-align: right; flex-shrink: 0; }
+    .content { padding: 0 0 .9rem .8rem; }
+    ul { margin: 0; padding: 0; list-style: none; }
+    .folder { margin: .5rem 0; background: #0e1b15; border-radius: .6rem; }
+    .folder > summary { font-size: .9rem; }
+    .folder ul { padding: 0 .8rem .5rem; }
+    li.file { border-bottom: 1px solid #22372b; }
     li.file:last-child { border-bottom: 0; }
-    a { min-width: 0; color: var(--accent); overflow-wrap: anywhere; text-decoration-thickness: .08em; text-underline-offset: .16em; }
-    a:hover { color: #c7ffdc; }
-    .empty { margin: .5rem 1rem 1rem; color: var(--muted); font-style: italic; }
-    @media (max-width: 600px) { main { width: min(100% - 1rem, 1100px); padding-top: 1.25rem; } header { align-items: start; } .controls { width: 100%; } button { flex: 1; } details details { margin-left: .35rem; } summary { padding-inline: .7rem; } .size { display: none; } }
+    .file a { display: flex; align-items: center; gap: .8rem; min-width: 0; padding: .8rem .5rem; border-radius: .4rem; color: var(--text); text-decoration: none; }
+    .file a:hover { background: #1a3023; color: var(--accent); }
+    .file-type { display: grid; place-items: center; flex: 0 0 2.4rem; height: 2rem; border: 1px solid #385d44; border-radius: .4rem; color: var(--accent); font-size: .6rem; font-weight: 700; letter-spacing: .04em; }
+    .file-name { min-width: 0; overflow-wrap: anywhere; font-size: .88rem; }
+    .size { margin-left: auto; flex-shrink: 0; color: var(--muted); font-size: .75rem; font-variant-numeric: tabular-nums; }
+    .file-arrow { color: var(--muted); flex-shrink: 0; }
+    .empty { margin: 1rem 0; padding: 1.5rem; border: 1px dashed var(--line); border-radius: .7rem; color: var(--muted); }
+    footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5rem; padding: 1.5rem 0 2rem; border-top: 1px solid var(--line); color: var(--muted); font-size: .75rem; }
+    @media (max-width: 640px) {
+      main { width: calc(100% - 2rem); }
+      .masthead-note { display: none; }
+      .hero { padding: 2.5rem 0 2rem; }
+      .stats { gap: 1rem 1.8rem; }
+      .stats div { display: block; }
+      .stats dd { font-size: 1.5rem; }
+      .stats dt { font-size: .75rem; }
+      .controls { width: 100%; }
+      .controls button { flex: 1; }
+      .season > summary { padding: 1rem; font-size: 1.1rem; flex-wrap: wrap; gap: .6rem; }
+      .season > summary .count { width: 100%; margin-left: 1.1rem; text-align: left; }
+      .season > .content { padding-inline: .7rem; }
+      .day > summary { align-items: start; flex-wrap: wrap; }
+      .day > summary::before { margin-top: .5rem; }
+      .day > summary > span:first-of-type { flex: 1; }
+      .day > summary .count { width: 100%; margin-left: 1.3rem; text-align: left; }
+      .content { padding-left: .2rem; }
+      .file a { gap: .5rem; flex-wrap: wrap; }
+      .file-name { flex: 1; }
+      .size { width: 100%; margin-left: 2.9rem; }
+      .file-arrow { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) { summary::before { transition: none; } }
   </style>
 </head>
 <body>
 <main>
-  <header>
-    <div><h1>PT Agility Streams</h1><p class="subtitle">Vídeos e ficheiros de provas.</p></div>
-    <div class="controls"><button type="button" data-action="expand">Expandir tudo</button><button type="button" data-action="collapse">Recolher tudo</button></div>
+  <header class="masthead">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">PT</span> PT Agility Streams</div>
+    <span class="masthead-note">O arquivo do agility português</span>
   </header>
+  <section class="hero" aria-labelledby="page-title">
+    <p class="eyebrow">Provas. Percursos. Memórias.</p>
+    <h1 id="page-title">O agility português,<br><span>prova a prova.</span></h1>
+    <p class="subtitle">Reveja cada percurso. Explore os vídeos e ficheiros das provas, organizados por época e por dia.</p>
+  </section>
 """
 
-HTML_END = """  <script>
-    document.querySelector("[data-action=expand]").addEventListener("click", () => document.querySelectorAll("details").forEach(item => item.open = true));
-    document.querySelector("[data-action=collapse]").addEventListener("click", () => document.querySelectorAll("details").forEach(item => item.open = false));
+HTML_END = r"""  </section>
+  <footer><span>PT Agility Streams &middot; Arquivo de provas</span><span>Feito para quem vive o agility.</span></footer>
+  <script>
+    const details = [...document.querySelectorAll("details")];
+    const search = document.querySelector("#search");
+    const status = document.querySelector("#search-status");
+    const empty = document.querySelector("#no-results");
+    const normalize = value => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt");
+    const files = [...document.querySelectorAll(".file")].map(element => ({
+      element,
+      text: normalize(decodeURIComponent(element.querySelector("a").getAttribute("href"))),
+    }));
+    const groups = [...details].reverse().map(element => {
+      const container = element.querySelector(":scope > .content > ul")
+        || element.querySelector(":scope > ul")
+        || element.querySelector(":scope > .content");
+      return { element, children: container ? [...container.children] : [] };
+    });
+    let savedOpen = new Map(details.map(item => [item, item.open]));
+    let searching = false;
+    search.addEventListener("input", () => {
+      const tokens = normalize(search.value.trim()).split(/\s+/).filter(Boolean);
+      if (tokens.length && !searching) savedOpen = new Map(details.map(item => [item, item.open]));
+      searching = tokens.length > 0;
+      let matches = 0;
+      files.forEach(({element, text}) => {
+        element.hidden = !tokens.every(token => text.includes(token));
+        if (!element.hidden) matches++;
+      });
+      groups.forEach(({element, children}) => {
+        element.hidden = searching && !children.some(child => !child.hidden);
+        if (element.parentElement.classList.contains("folder-node")) element.parentElement.hidden = element.hidden;
+        element.open = searching ? !element.hidden : savedOpen.get(element);
+      });
+      empty.hidden = !searching || matches > 0;
+      status.textContent = searching ? `${matches.toLocaleString("pt-PT")} ficheiros encontrados` : "Explore o arquivo por época e por dia.";
+    });
+    document.querySelector("[data-action=expand]").addEventListener("click", () => details.forEach(item => { if (!item.hidden) item.open = true; }));
+    document.querySelector("[data-action=collapse]").addEventListener("click", () => details.forEach(item => item.open = false));
   </script>
 </main>
 </body>
@@ -176,9 +276,13 @@ def render_file(lines: list[str], file: FileItem, source: Path, depth: int) -> N
     indent = "  " * depth
     href = escape(file_href(file, source), quote=True)
     name = escape(file.name)
+    file_type = escape(file.path.suffix.lstrip(".").upper() or "FILE")
     lines.append(
-        f'{indent}<li class="file"><a href="{href}">{name}</a>'
-        f'<span class="size">{format_file_size(file.size)}</span></li>'
+        f'{indent}<li class="file"><a href="{href}">'
+        f'<span class="file-type" aria-hidden="true">{file_type}</span>'
+        f'<span class="file-name">{name}</span>'
+        f'<span class="size">{format_file_size(file.size)}</span>'
+        f'<span class="file-arrow" aria-hidden="true">&nearr;</span></a></li>'
     )
 
 
@@ -206,6 +310,25 @@ def render_index(
     seasons: tuple[Season, ...], source: Path, latest_days_open: int
 ) -> str:
     lines = [HTML_START.rstrip("\n")]
+    day_count = sum(len(season.days) for season in seasons)
+    file_count = sum(season.file_count for season in seasons)
+    lines.extend(
+        [
+            '  <dl class="stats" aria-label="O arquivo em números">',
+            f"    <div><dt>épocas</dt><dd>{len(seasons)}</dd></div>",
+            f"    <div><dt>dias de provas</dt><dd>{day_count}</dd></div>",
+            f"    <div><dt>ficheiros</dt><dd>{file_count:,}</dd></div>".replace(",", " "),
+            "  </dl>",
+            '  <div class="toolbar">',
+            '    <div class="search"><label for="search">Pesquisar no arquivo</label>',
+            '      <input id="search" type="search" placeholder="Nome, data, grau ou clube..." aria-controls="archive" autocomplete="off"></div>',
+            '    <div class="controls"><button type="button" data-action="expand">Expandir tudo</button><button type="button" data-action="collapse">Recolher tudo</button></div>',
+            "  </div>",
+            '  <div class="archive-meta"><span id="search-status" role="status">Explore o arquivo por época e por dia.</span><span>Mais recentes primeiro</span></div>',
+            '  <section id="archive" class="archive" aria-label="Épocas e provas">',
+            '    <p id="no-results" class="empty" hidden>Nenhum ficheiro encontrado. Experimente outro nome, data ou grau.</p>',
+        ]
+    )
 
     for season_index, season in enumerate(seasons):
         season_open = " open" if season_index == 0 else ""
@@ -225,7 +348,7 @@ def render_index(
             )
             lines.append(f'      <details class="day"{day_open}>')
             lines.append(
-                f"        <summary><span>{escape(day.name)}</span>"
+                f"        <summary><span>{escape(day.name.replace('_', ' '))}</span>"
                 f'<span class="count">{day.file_count} ficheiros</span></summary>'
             )
 
