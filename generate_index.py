@@ -20,7 +20,7 @@ HTML_START = """<!doctype html>
   <meta charset="utf-8">
   <base href="/videos/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Agility PT Streams</title>
+  <title>PT Agility Streams</title>
   <style>
     :root { color-scheme: dark; --bg: #071c13; --panel: #0d3021; --panel-2: #145136; --text: #f2fff7; --muted: #add5bd; --accent: #76f0a7; --line: #2d7852; }
     * { box-sizing: border-box; }
@@ -53,7 +53,7 @@ HTML_START = """<!doctype html>
 <body>
 <main>
   <header>
-    <div><h1>Agility PT Streams</h1><p class="subtitle">Vídeos e ficheiros de provas, dos mais recentes para os mais antigos.</p></div>
+    <div><h1>PT Agility Streams</h1><p class="subtitle">Vídeos e ficheiros de provas.</p></div>
     <div class="controls"><button type="button" data-action="expand">Expandir tudo</button><button type="button" data-action="collapse">Recolher tudo</button></div>
   </header>
 """
