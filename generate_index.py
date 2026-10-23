@@ -18,6 +18,7 @@ HTML_START = """<!doctype html>
 <html lang="pt">
 <head>
   <meta charset="utf-8">
+  <base href="/videos/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Agility PT Streams</title>
   <style>
