@@ -147,10 +147,9 @@ HTML_END = r"""  </section>
       <form method="dialog"><button type="submit" autofocus>Fechar</button></form>
     </div>
     <video controls autoplay playsinline preload="metadata" aria-label="Reprodutor de vídeo"></video>
-    <p id="player-error" class="player-error" role="alert" hidden>Não foi possível reproduzir este vídeo. Tente abrir o ficheiro diretamente ou descarregá-lo.</p>
+    <p id="player-error" class="player-error" role="alert" hidden>Não foi possível reproduzir este vídeo. Experimente descarregar o ficheiro.</p>
     <div class="player-actions">
       <a class="player-download" download aria-label="Descarregar vídeo" title="Descarregar vídeo"><span class="download-icon" aria-hidden="true"></span></a>
-      <a class="player-direct" target="_blank" rel="noopener">Abrir ficheiro diretamente</a>
     </div>
   </dialog>
   <script>
@@ -202,7 +201,6 @@ HTML_END = r"""  </section>
       player.querySelector("#player-title").textContent = name;
       player.querySelector(".player-download").href = link.href;
       player.querySelector(".player-download").download = name;
-      player.querySelector(".player-direct").href = link.href;
       playerError.hidden = true;
       player.showModal();
       document.documentElement.classList.add("player-open");

@@ -10,8 +10,8 @@ predefinição. Os links dos ficheiros usam a base `/videos/` do site.
 O aspeto e o comportamento da página são definidos em `generate_index.py`.
 
 Os links MP4 abrem um reprodutor numa janela modal, com controlos de reprodução,
-um botão para fechar (ou a tecla Escape) e ações para descarregar ou abrir o
-ficheiro diretamente. Cada MP4 tem também um botão de descarga separado na
+um botão para fechar (ou a tecla Escape) e uma ação para descarregar o
+ficheiro. Cada MP4 tem também um botão de descarga separado na
 listagem. Sem JavaScript, o link continua a abrir o vídeo diretamente.
 A descarga usa o atributo HTML `download`, destinado a ficheiros no mesmo
 domínio, como os servidos em `/videos/`.
