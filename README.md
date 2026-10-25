@@ -16,6 +16,14 @@ listagem. Sem JavaScript, o link continua a abrir o vídeo diretamente.
 A descarga usa o atributo HTML `download`, destinado a ficheiros no mesmo
 domínio, como os servidos em `/videos/`.
 
+O canal `twitch.tv/ardogeek` aparece acima do arquivo apenas quando está em
+direto, com reprodução automática sem som. O SDK oficial da Twitch usa os eventos
+`ONLINE` e `OFFLINE` para mostrar ou ocultar a secção sem recarregar a página.
+O parâmetro `parent` usa o domínio `videos.agility.pt`; não são necessárias
+chaves de API. Em ficheiros locais ou páginas HTTP, a secção permanece oculta.
+O reprodutor requer pelo menos 400 × 300 píxeis. Em ecrãs pequenos, quando o
+canal está em direto, é apresentado um link para ver a transmissão na Twitch.
+
 ## Atualizar o índice
 
 Com a unidade `Z:\` acessível, execute:

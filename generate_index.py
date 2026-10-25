@@ -38,6 +38,14 @@ HTML_START = """<!doctype html>
     h1 { max-width: 850px; margin: 0; font-size: clamp(2.5rem, 6vw, 4.6rem); font-weight: 650; line-height: 1.08; letter-spacing: -.055em; }
     h1 span { color: var(--accent); }
     .subtitle { max-width: 38rem; margin: 1.2rem 0 0; color: var(--muted); font-size: 1.05rem; }
+    .live-stream { container-type: inline-size; margin-bottom: 2.5rem; padding: 1.2rem; border: 1px solid var(--line); border-radius: .85rem; background: var(--panel); }
+    .live-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem; margin-bottom: 1rem; }
+    .live-header h2 { margin: 0; font-size: 1.2rem; font-weight: 600; }
+    .live-header a { color: var(--accent); text-underline-offset: .2em; }
+    .twitch-player { position: relative; width: 100%; aspect-ratio: 16 / 9; min-height: 300px; }
+    .twitch-player iframe { position: absolute; inset: 0; display: block; width: 100%; height: 100%; border: 0; border-radius: .5rem; }
+    .twitch-note { display: none; margin: 0; color: var(--muted); }
+    @container (max-width: 399px) { .twitch-player { display: none; } .twitch-note { display: block; } }
     .stats { display: flex; flex-wrap: wrap; gap: 1.5rem 3rem; margin: 0 0 2.5rem; padding: 1.3rem 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
     .stats div { display: flex; align-items: baseline; gap: .65rem; }
     .stats dt { color: var(--muted); font-size: .85rem; order: 1; }
@@ -137,6 +145,14 @@ HTML_START = """<!doctype html>
     <h1 id="page-title">O agility português,<br><span>prova a prova.</span></h1>
     <p class="subtitle">Reveja cada percurso. Explore os vídeos e ficheiros das provas, organizados por época e por dia.</p>
   </section>
+  <section id="live-stream" class="live-stream" aria-labelledby="twitch-title" hidden>
+    <div class="live-header">
+      <h2 id="twitch-title">Em direto: ardogeek</h2>
+      <a href="https://www.twitch.tv/ardogeek" target="_blank" rel="noopener">Ver na Twitch &nearr;</a>
+    </div>
+    <div id="twitch-player" class="twitch-player"></div>
+    <p class="twitch-note">O canal está em direto. Para ver neste ecrã, abra o canal na Twitch.</p>
+  </section>
 """
 
 HTML_END = r"""  </section>
@@ -153,6 +169,33 @@ HTML_END = r"""  </section>
     </div>
   </dialog>
   <script>
+    if (location.protocol === "https:") {
+      const twitchScript = document.createElement("script");
+      twitchScript.src = "https://player.twitch.tv/js/embed/v1.js";
+      twitchScript.addEventListener("load", () => {
+        const section = document.querySelector("#live-stream");
+        const twitchPlayer = new Twitch.Player("twitch-player", {
+          channel: "ardogeek",
+          parent: ["videos.agility.pt"],
+          autoplay: true,
+          muted: true,
+          width: "100%",
+          height: "100%",
+        });
+        twitchPlayer.addEventListener(Twitch.Player.READY, () => {
+          document.querySelector("#twitch-player iframe").title = "Transmissões de ardogeek na Twitch";
+        });
+        twitchPlayer.addEventListener(Twitch.Player.ONLINE, () => { section.hidden = false; });
+        twitchPlayer.addEventListener(Twitch.Player.OFFLINE, () => { section.hidden = true; });
+        window.addEventListener("resize", () => {
+          if (!section.hidden && document.querySelector("#twitch-player").clientWidth < 400) twitchPlayer.pause();
+        });
+      });
+      twitchScript.addEventListener("error", () => {
+        console.error("Não foi possível carregar o reprodutor da Twitch para verificar o estado da transmissão.");
+      });
+      document.head.append(twitchScript);
+    }
     const details = [...document.querySelectorAll("details")];
     const search = document.querySelector("#search");
     const status = document.querySelector("#search-status");
