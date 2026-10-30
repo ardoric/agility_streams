@@ -148,10 +148,10 @@ HTML_START = """<!doctype html>
   <section id="live-stream" class="live-stream" aria-labelledby="twitch-title" hidden>
     <div class="live-header">
       <h2 id="twitch-title">Em direto: ardogeek</h2>
-      <a href="https://www.twitch.tv/ardogeek" target="_blank" rel="noopener">Ver na Twitch &nearr;</a>
+      <a href="https://www.twitch.tv/ardogeek" target="_blank" rel="noopener">Ver no Twitch &nearr;</a>
     </div>
     <div id="twitch-player" class="twitch-player"></div>
-    <p class="twitch-note">O canal está em direto. Para ver neste ecrã, abra o canal na Twitch.</p>
+    <p class="twitch-note">O canal está em direto. Para ver neste ecrã, abra o canal no Twitch.</p>
   </section>
 """
 
@@ -183,7 +183,7 @@ HTML_END = r"""  </section>
           height: "100%",
         });
         twitchPlayer.addEventListener(Twitch.Player.READY, () => {
-          document.querySelector("#twitch-player iframe").title = "Transmissões de ardogeek na Twitch";
+          document.querySelector("#twitch-player iframe").title = "Transmissões de ardogeek no Twitch";
         });
         twitchPlayer.addEventListener(Twitch.Player.ONLINE, () => { section.hidden = false; });
         twitchPlayer.addEventListener(Twitch.Player.OFFLINE, () => { section.hidden = true; });
@@ -192,7 +192,7 @@ HTML_END = r"""  </section>
         });
       });
       twitchScript.addEventListener("error", () => {
-        console.error("Não foi possível carregar o reprodutor da Twitch para verificar o estado da transmissão.");
+        console.error("Não foi possível carregar o reprodutor do Twitch para verificar o estado da transmissão.");
       });
       document.head.append(twitchScript);
     }
